@@ -37,4 +37,9 @@ public class ConducteurController {
         return ResponseEntity.ok(service.updateConducteur(id, requestDTO));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteConducteur(@PathVariable Long id) {
+        service.deleteConducteur(id);
+        return ResponseEntity.noContent().build();
+    }
 }
