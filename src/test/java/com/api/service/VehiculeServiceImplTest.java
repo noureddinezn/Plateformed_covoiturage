@@ -100,4 +100,13 @@ class VehiculeServiceImplTest {
         verify(vehiculeRepository, times(1)).save(any(Vehicule.class));
     }
 
+    @Test
+    void saveVehicule_ImmatriculationExists_ThrowsBusinessException() {
+        when(vehiculeRepository.existsByImmatriculation(requestDTO.getImmatriculation())).thenReturn(true);
+
+        assertThrows(BusinessException.class, () -> service.saveVehicule(requestDTO));
+
+        verify(vehiculeRepository, never()).save(any(Vehicule.class));
+    }
+
 }
