@@ -12,4 +12,6 @@ public interface VehiculeMapper {
     @Mapping(target = "conducteur.id", source = "conducteurId")
     Vehicule toEntity(VehiculeRequestDTO requestDTO);
 
+    @Mapping(target = "conducteurId", source = "conducteur.id")
+    VehiculeResponseDTO toResponseDTO(Vehicule vehicule);
 }
