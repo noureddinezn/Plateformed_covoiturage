@@ -74,4 +74,12 @@ public class ConducteurServiceImpl implements ConducteurService {
         return mapper.toResponseDTO(updatedConducteur);
     }
 
+    @Override
+    @Transactional
+    public void deleteConducteur(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Conducteur introuvable avec l'ID : " + id);
+        }
+        repository.deleteById(id);
+    }
 }
