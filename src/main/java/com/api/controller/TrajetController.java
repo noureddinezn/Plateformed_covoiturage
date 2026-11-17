@@ -28,4 +28,9 @@ public class TrajetController {
         return ResponseEntity.ok(service.getTrajetById(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<TrajetResponseDTO>> getAllTrajets() {
+        return ResponseEntity.ok(service.getAllTrajets());
+    }
+
 }
