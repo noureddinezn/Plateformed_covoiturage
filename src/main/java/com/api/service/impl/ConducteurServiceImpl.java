@@ -45,4 +45,10 @@ public class ConducteurServiceImpl implements ConducteurService {
         return mapper.toResponseDTO(conducteur);
     }
 
+    @Override
+    public List<ConducteurResponseDTO> getAllConducteurs() {
+        return repository.findAll().stream()
+                .map(mapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
 }
