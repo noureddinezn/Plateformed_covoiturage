@@ -49,4 +49,11 @@ public class VehiculeServiceImpl implements VehiculeService {
         return mapper.toResponseDTO(vehicule);
     }
 
+    @Override
+    public List<VehiculeResponseDTO> getAllVehicules() {
+        return vehiculeRepository.findAll().stream()
+                .map(mapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
 }
