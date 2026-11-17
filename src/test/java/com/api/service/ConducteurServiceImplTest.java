@@ -90,4 +90,15 @@ class ConducteurServiceImplTest {
         verify(repository, never()).save(any(Conducteur.class));
     }
 
+    @Test
+    void getConducteurById_Success() {
+        when(repository.findById(1L)).thenReturn(Optional.of(conducteur));
+        when(mapper.toResponseDTO(conducteur)).thenReturn(responseDTO);
+
+        ConducteurResponseDTO result = service.getConducteurById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(repository, times(1)).findById(1L);
+    }
 }
