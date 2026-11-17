@@ -81,4 +81,13 @@ class ConducteurServiceImplTest {
         verify(repository, times(1)).save(any(Conducteur.class));
     }
 
+    @Test
+    void saveConducteur_EmailExists_ThrowsBusinessException() {
+        when(repository.existsByEmail(requestDTO.getEmail())).thenReturn(true);
+
+        assertThrows(BusinessException.class, () -> service.saveConducteur(requestDTO));
+
+        verify(repository, never()).save(any(Conducteur.class));
+    }
+
 }
