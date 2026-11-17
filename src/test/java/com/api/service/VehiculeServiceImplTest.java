@@ -109,4 +109,14 @@ class VehiculeServiceImplTest {
         verify(vehiculeRepository, never()).save(any(Vehicule.class));
     }
 
+    @Test
+    void saveVehicule_ConducteurNotFound_ThrowsResourceNotFoundException() {
+        when(vehiculeRepository.existsByImmatriculation(requestDTO.getImmatriculation())).thenReturn(false);
+        when(conducteurRepository.findById(requestDTO.getConducteurId())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> service.saveVehicule(requestDTO));
+
+        verify(vehiculeRepository, never()).save(any(Vehicule.class));
+    }
+
 }
