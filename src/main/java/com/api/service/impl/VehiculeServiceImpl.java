@@ -42,4 +42,11 @@ public class VehiculeServiceImpl implements VehiculeService {
         return mapper.toResponseDTO(savedVehicule);
     }
 
+    @Override
+    public VehiculeResponseDTO getVehiculeById(Long id) {
+        Vehicule vehicule = vehiculeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicule introuvable avec l'ID : " + id));
+        return mapper.toResponseDTO(vehicule);
+    }
+
 }
