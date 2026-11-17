@@ -33,4 +33,14 @@ public class PassagerController {
         return ResponseEntity.ok(service.getAllPassagers());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PassagerResponseDTO> updatePassager(@PathVariable Long id, @Valid @RequestBody PassagerRequestDTO requestDTO) {
+        return ResponseEntity.ok(service.updatePassager(id, requestDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePassager(@PathVariable Long id) {
+        service.deletePassager(id);
+        return ResponseEntity.noContent().build();
+    }
 }
