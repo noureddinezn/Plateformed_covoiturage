@@ -23,4 +23,9 @@ public class VehiculeController {
         return new ResponseEntity<>(service.saveVehicule(requestDTO), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<VehiculeResponseDTO> getVehicule(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getVehiculeById(id));
+    }
+
 }
