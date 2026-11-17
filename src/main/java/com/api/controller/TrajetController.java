@@ -23,4 +23,9 @@ public class TrajetController {
         return new ResponseEntity<>(service.saveTrajet(requestDTO), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TrajetResponseDTO> getTrajet(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getTrajetById(id));
+    }
+
 }
