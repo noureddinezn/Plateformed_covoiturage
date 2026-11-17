@@ -23,4 +23,9 @@ public class PassagerController {
         return new ResponseEntity<>(service.savePassager(requestDTO), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PassagerResponseDTO> getPassager(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getPassagerById(id));
+    }
+
 }
