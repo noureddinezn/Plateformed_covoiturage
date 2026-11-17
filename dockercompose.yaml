@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: platforme_covoiturage
+    # restart: unless-stopped
+    environment:
+      POSTGRES_DB: platforme_covoiturage
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "2003"
+    ports:
+      - "127.0.0.1:5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
