@@ -32,4 +32,9 @@ public class ConducteurController {
     public ResponseEntity<List<ConducteurResponseDTO>> getAllConducteurs() {
         return ResponseEntity.ok(service.getAllConducteurs());
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<ConducteurResponseDTO> updateConducteur(@PathVariable Long id, @Valid @RequestBody ConducteurRequestDTO requestDTO) {
+        return ResponseEntity.ok(service.updateConducteur(id, requestDTO));
+    }
+
 }
