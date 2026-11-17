@@ -28,4 +28,9 @@ public class PassagerController {
         return ResponseEntity.ok(service.getPassagerById(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<PassagerResponseDTO>> getAllPassagers() {
+        return ResponseEntity.ok(service.getAllPassagers());
+    }
+
 }
