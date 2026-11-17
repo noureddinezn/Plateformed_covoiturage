@@ -51,4 +51,27 @@ public class ConducteurServiceImpl implements ConducteurService {
                 .map(mapper::toResponseDTO)
                 .collect(Collectors.toList());
     }
+    @Override
+    @Transactional
+    public ConducteurResponseDTO updateConducteur(Long id, ConducteurRequestDTO requestDTO) {
+        Conducteur conducteur = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Conducteur introuvable avec l'ID : " + id));
+
+        if (!conducteur.getEmail().equals(requestDTO.getEmail()) && repository.existsByEmail(requestDTO.getEmail())) {
+            throw new BusinessException("L'email est deja utilise.");
+        }
+        if (!conducteur.getNumeroPermis().equals(requestDTO.getNumeroPermis()) && repository.existsByNumeroPermis(requestDTO.getNumeroPermis())) {
+            throw new BusinessException("Le numero de permis est deja utilise.");
+        }
+
+        conducteur.setNom(requestDTO.getNom());
+        conducteur.setPrenom(requestDTO.getPrenom());
+        conducteur.setEmail(requestDTO.getEmail());
+        conducteur.setTelephone(requestDTO.getTelephone());
+        conducteur.setNumeroPermis(requestDTO.getNumeroPermis());
+
+        Conducteur updatedConducteur = repository.save(conducteur);
+        return mapper.toResponseDTO(updatedConducteur);
+    }
+
 }
