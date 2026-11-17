@@ -81,4 +81,12 @@ public class VehiculeServiceImpl implements VehiculeService {
         return mapper.toResponseDTO(updatedVehicule);
     }
 
+    @Override
+    @Transactional
+    public void deleteVehicule(Long id) {
+        if (!vehiculeRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Vehicule introuvable avec l'ID : " + id);
+        }
+        vehiculeRepository.deleteById(id);
+    }
 }
