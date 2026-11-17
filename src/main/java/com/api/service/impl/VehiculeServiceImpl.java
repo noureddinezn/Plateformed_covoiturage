@@ -56,4 +56,29 @@ public class VehiculeServiceImpl implements VehiculeService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public VehiculeResponseDTO updateVehicule(Long id, VehiculeRequestDTO requestDTO) {
+        Vehicule vehicule = vehiculeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicule introuvable avec l'ID : " + id));
+
+        if (!vehicule.getImmatriculation().equals(requestDTO.getImmatriculation()) &&
+                vehiculeRepository.existsByImmatriculation(requestDTO.getImmatriculation())) {
+            throw new BusinessException("L'immatriculation est deja utilisee.");
+        }
+
+        Conducteur conducteur = conducteurRepository.findById(requestDTO.getConducteurId())
+                .orElseThrow(() -> new ResourceNotFoundException("Conducteur introuvable avec l'ID : " + requestDTO.getConducteurId()));
+
+        vehicule.setMarque(requestDTO.getMarque());
+        vehicule.setModele(requestDTO.getModele());
+        vehicule.setImmatriculation(requestDTO.getImmatriculation());
+        vehicule.setCouleur(requestDTO.getCouleur());
+        vehicule.setCapacite(requestDTO.getCapacite());
+        vehicule.setConducteur(conducteur);
+
+        Vehicule updatedVehicule = vehiculeRepository.save(vehicule);
+        return mapper.toResponseDTO(updatedVehicule);
+    }
+
 }
