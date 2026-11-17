@@ -23,4 +23,9 @@ public class ConducteurController {
         return new ResponseEntity<>(service.saveConducteur(requestDTO), HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ConducteurResponseDTO> getConducteur(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getConducteurById(id));
+    }
+
 }
