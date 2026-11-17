@@ -28,4 +28,9 @@ public class VehiculeController {
         return ResponseEntity.ok(service.getVehiculeById(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<VehiculeResponseDTO>> getAllVehicules() {
+        return ResponseEntity.ok(service.getAllVehicules());
+    }
+
 }
