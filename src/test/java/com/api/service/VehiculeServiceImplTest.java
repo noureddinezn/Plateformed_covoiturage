@@ -119,4 +119,15 @@ class VehiculeServiceImplTest {
         verify(vehiculeRepository, never()).save(any(Vehicule.class));
     }
 
+    @Test
+    void getVehiculeById_Success() {
+        when(vehiculeRepository.findById(1L)).thenReturn(Optional.of(vehicule));
+        when(mapper.toResponseDTO(vehicule)).thenReturn(responseDTO);
+
+        VehiculeResponseDTO result = service.getVehiculeById(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(vehiculeRepository, times(1)).findById(1L);
+    }
 }
