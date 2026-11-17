@@ -38,4 +38,9 @@ public class VehiculeController {
         return ResponseEntity.ok(service.updateVehicule(id, requestDTO));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicule(@PathVariable Long id) {
+        service.deleteVehicule(id);
+        return ResponseEntity.noContent().build();
+    }
 }
