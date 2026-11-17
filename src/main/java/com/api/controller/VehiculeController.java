@@ -33,4 +33,9 @@ public class VehiculeController {
         return ResponseEntity.ok(service.getAllVehicules());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<VehiculeResponseDTO> updateVehicule(@PathVariable Long id, @Valid @RequestBody VehiculeRequestDTO requestDTO) {
+        return ResponseEntity.ok(service.updateVehicule(id, requestDTO));
+    }
+
 }
