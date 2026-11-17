@@ -33,4 +33,14 @@ public class TrajetController {
         return ResponseEntity.ok(service.getAllTrajets());
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TrajetResponseDTO> updateTrajet(@PathVariable Long id, @Valid @RequestBody TrajetRequestDTO requestDTO) {
+        return ResponseEntity.ok(service.updateTrajet(id, requestDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTrajet(@PathVariable Long id) {
+        service.deleteTrajet(id);
+        return ResponseEntity.noContent().build();
+    }
 }
