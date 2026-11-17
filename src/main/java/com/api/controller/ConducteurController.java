@@ -28,4 +28,8 @@ public class ConducteurController {
         return ResponseEntity.ok(service.getConducteurById(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<ConducteurResponseDTO>> getAllConducteurs() {
+        return ResponseEntity.ok(service.getAllConducteurs());
+    }
 }
