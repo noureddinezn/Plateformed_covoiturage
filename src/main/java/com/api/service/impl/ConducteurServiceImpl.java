@@ -1,7 +1,7 @@
 package com.api.service.impl;
 
-import com.api.dto.ConducteurRequestDTO;
-import com.api.dto.ConducteurResponseDTO;
+import com.api.dto.request.ConducteurRequestDTO;
+import com.api.dto.response.ConducteurResponseDTO;
 import com.api.entity.Conducteur;
 import com.api.exception.BusinessException;
 import com.api.exception.ResourceNotFoundException;
@@ -30,6 +30,10 @@ public class ConducteurServiceImpl implements ConducteurService {
         }
         if (repository.existsByNumeroPermis(requestDTO.getNumeroPermis())) {
             throw new BusinessException("Le numero de permis est deja utilise.");
+        }
+
+        if (repository.existsByTelephone(requestDTO.getTelephone())) {
+            throw new BusinessException("Le telephone est deja utilise.");
         }
 
         Conducteur conducteur = mapper.toEntity(requestDTO);
@@ -62,6 +66,11 @@ public class ConducteurServiceImpl implements ConducteurService {
         }
         if (!conducteur.getNumeroPermis().equals(requestDTO.getNumeroPermis()) && repository.existsByNumeroPermis(requestDTO.getNumeroPermis())) {
             throw new BusinessException("Le numero de permis est deja utilise.");
+        }
+
+        if (!conducteur.getTelephone().equals(requestDTO.getTelephone())
+                && repository.existsByTelephone(requestDTO.getTelephone())) {
+            throw new BusinessException("Le telephone est deja utilise.");
         }
 
         conducteur.setNom(requestDTO.getNom());
