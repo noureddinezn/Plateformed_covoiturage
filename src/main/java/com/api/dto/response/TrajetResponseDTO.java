@@ -1,4 +1,4 @@
-package com.api.dto;
+package com.api.dto.response;
 
 import com.api.enums.StatutTrajet;
 import lombok.*;
@@ -18,5 +18,6 @@ public class TrajetResponseDTO {
     private String villeArrivee;
     private LocalDateTime dateDepart;
     private Integer placesProposees;
+    private Integer placesRestantes;
     private StatutTrajet statut;
 }
