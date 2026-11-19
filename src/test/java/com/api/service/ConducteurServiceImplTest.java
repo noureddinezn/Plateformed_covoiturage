@@ -1,7 +1,7 @@
 package com.api.service;
 
-import com.api.dto.ConducteurRequestDTO;
-import com.api.dto.ConducteurResponseDTO;
+import com.api.dto.request.ConducteurRequestDTO;
+import com.api.dto.response.ConducteurResponseDTO;
 import com.api.entity.Conducteur;
 import com.api.exception.BusinessException;
 import com.api.mapper.ConducteurMapper;
@@ -101,4 +101,31 @@ class ConducteurServiceImplTest {
         assertEquals(1L, result.getId());
         verify(repository, times(1)).findById(1L);
     }
+
+    @Test
+    void saveConducteur_DuplicateTelephoneIsRejected() {
+        when(repository.existsByTelephone(requestDTO.getTelephone())).thenReturn(true);
+        assertThrows(BusinessException.class, () -> service.saveConducteur(requestDTO));
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void updateConducteur_DuplicateTelephoneIsRejected() {
+        when(repository.findById(1L)).thenReturn(Optional.of(conducteur));
+        requestDTO.setTelephone("0699999999");
+        when(repository.existsByTelephone(requestDTO.getTelephone())).thenReturn(true);
+        assertThrows(BusinessException.class, () -> service.updateConducteur(1L, requestDTO));
+        verify(repository, never()).save(any());
+        assertEquals("0600112233", conducteur.getTelephone());
+    }
+
+    @Test
+    void updateConducteur_UnchangedTelephoneIsAccepted() {
+        when(repository.findById(1L)).thenReturn(Optional.of(conducteur));
+        when(repository.save(conducteur)).thenReturn(conducteur);
+        when(mapper.toResponseDTO(conducteur)).thenReturn(responseDTO);
+        assertSame(responseDTO, service.updateConducteur(1L, requestDTO));
+        verify(repository, never()).existsByTelephone(any());
+    }
+
 }
