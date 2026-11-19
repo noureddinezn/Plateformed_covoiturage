@@ -28,7 +28,7 @@ public class Conducteur {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String telephone;
 
     @Column(name = "numero_permis", nullable = false, unique = true)
