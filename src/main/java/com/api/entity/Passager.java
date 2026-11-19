@@ -34,4 +34,7 @@ public class Passager {
     @OneToMany(mappedBy = "passager")
     @Builder.Default
     private List<Reservation> reservations = new ArrayList<>();
+
+
+
 }

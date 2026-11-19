@@ -1,7 +1,7 @@
 package com.api.service.impl;
 
-import com.api.dto.PassagerRequestDTO;
-import com.api.dto.PassagerResponseDTO;
+import com.api.dto.request.PassagerRequestDTO;
+import com.api.dto.response.PassagerResponseDTO;
 import com.api.entity.Passager;
 import com.api.exception.BusinessException;
 import com.api.exception.ResourceNotFoundException;
