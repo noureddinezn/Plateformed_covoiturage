@@ -1,7 +1,7 @@
 package com.api.controller;
 
-import com.api.dto.ConducteurRequestDTO;
-import com.api.dto.ConducteurResponseDTO;
+import com.api.dto.request.ConducteurRequestDTO;
+import com.api.dto.response.ConducteurResponseDTO;
 import com.api.service.ConducteurService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

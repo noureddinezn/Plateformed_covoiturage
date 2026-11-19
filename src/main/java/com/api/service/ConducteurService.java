@@ -1,7 +1,7 @@
 package com.api.service;
 
-import com.api.dto.ConducteurRequestDTO;
-import com.api.dto.ConducteurResponseDTO;
+import com.api.dto.request.ConducteurRequestDTO;
+import com.api.dto.response.ConducteurResponseDTO;
 import java.util.List;
 
 public interface ConducteurService {
