@@ -138,4 +138,25 @@ class PointArretServiceImplTest {
         assertTrue(service.getPointsArretByTrajetId(1L).isEmpty());
         verifyNoInteractions(mapper);
     }
+
+    @Test
+    void updateStopCopiesFieldsAndChangesTrip() {
+        Trajet destination = Trajet.builder().id(2L).build();
+        requestDTO.setTrajetId(2L);
+        requestDTO.setVille("Kenitra");
+        requestDTO.setOrdre(3);
+        requestDTO.setPrixDepuisDepart(new BigDecimal("85.50"));
+        when(pointArretRepository.findById(1L)).thenReturn(Optional.of(pointArret));
+        when(trajetRepository.findById(2L)).thenReturn(Optional.of(destination));
+        when(pointArretRepository.save(pointArret)).thenReturn(pointArret);
+        when(mapper.toResponseDTO(pointArret)).thenReturn(responseDTO);
+        assertSame(responseDTO, service.updatePointArret(1L, requestDTO));
+        assertAll(
+                () -> assertSame(destination, pointArret.getTrajet()),
+                () -> assertEquals("Kenitra", pointArret.getVille()),
+                () -> assertEquals(3, pointArret.getOrdre()),
+                () -> assertEquals(requestDTO.getHeurePassage(), pointArret.getHeurePassage()),
+                () -> assertEquals(new BigDecimal("85.50"), pointArret.getPrixDepuisDepart()));
+        verify(pointArretRepository).save(pointArret);
+    }
 }
