@@ -176,4 +176,10 @@ class PointArretServiceImplTest {
         assertEquals("Rabat", pointArret.getVille());
         verify(pointArretRepository, never()).save(any());
     }
+
+    @Test
+    void deleteMissingStopDoesNotDelete() {
+        assertThrows(ResourceNotFoundException.class, () -> service.deletePointArret(99L));
+        verify(pointArretRepository, never()).deleteById(any());
+    }
 }
