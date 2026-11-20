@@ -37,4 +37,13 @@ class PassagerServiceImplTest {
         verify(repository).existsByEmail(request.getEmail());
         verify(repository).save(entity);
     }
+
+    @Test
+    void duplicateEmailPreventsPassengerCreation() {
+        PassagerRequestDTO request = PassagerRequestDTO.builder().email("used@example.com").build();
+        when(repository.existsByEmail(request.getEmail())).thenReturn(true);
+        assertThrows(BusinessException.class, () -> service.savePassager(request));
+        verify(repository, never()).save(any());
+        verifyNoInteractions(mapper);
+    }
 }
