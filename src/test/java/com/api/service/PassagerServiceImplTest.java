@@ -46,4 +46,10 @@ class PassagerServiceImplTest {
         verify(repository, never()).save(any());
         verifyNoInteractions(mapper);
     }
+
+    @Test
+    void missingPassengerLookupDoesNotMap() {
+        assertThrows(ResourceNotFoundException.class, () -> service.getPassagerById(99L));
+        verifyNoInteractions(mapper);
+    }
 }
