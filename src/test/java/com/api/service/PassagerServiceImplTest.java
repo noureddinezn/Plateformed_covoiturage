@@ -82,4 +82,16 @@ class PassagerServiceImplTest {
                 () -> assertEquals("sara@example.com", entity.getEmail()));
         verify(repository, never()).existsByEmail(any());
     }
+
+    @Test
+    void passengerListPreservesMappedOrder() {
+        Passager first = Passager.builder().id(7L).build();
+        Passager second = Passager.builder().id(3L).build();
+        PassagerResponseDTO firstResponse = PassagerResponseDTO.builder().id(7L).build();
+        PassagerResponseDTO secondResponse = PassagerResponseDTO.builder().id(3L).build();
+        when(repository.findAll()).thenReturn(List.of(first, second));
+        when(mapper.toResponseDTO(first)).thenReturn(firstResponse);
+        when(mapper.toResponseDTO(second)).thenReturn(secondResponse);
+        assertEquals(List.of(firstResponse, secondResponse), service.getAllPassagers());
+    }
 }
