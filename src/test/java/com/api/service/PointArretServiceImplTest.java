@@ -159,4 +159,11 @@ class PointArretServiceImplTest {
                 () -> assertEquals(new BigDecimal("85.50"), pointArret.getPrixDepuisDepart()));
         verify(pointArretRepository).save(pointArret);
     }
+
+    @Test
+    void updateMissingStopDoesNotLoadTripOrSave() {
+        assertThrows(ResourceNotFoundException.class, () -> service.updatePointArret(99L, requestDTO));
+        verifyNoInteractions(trajetRepository, mapper);
+        verify(pointArretRepository, never()).save(any());
+    }
 }
