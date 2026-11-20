@@ -148,4 +148,12 @@ class ConducteurServiceImplTest {
         assertThrows(com.api.exception.ResourceNotFoundException.class, () -> service.deleteConducteur(99L));
         verify(repository, never()).deleteById(any());
     }
+
+    @Test
+    void existingConducteurIsDeletedById() {
+        when(repository.existsById(1L)).thenReturn(true);
+        service.deleteConducteur(1L);
+        verify(repository).deleteById(1L);
+        verifyNoInteractions(mapper);
+    }
 }
