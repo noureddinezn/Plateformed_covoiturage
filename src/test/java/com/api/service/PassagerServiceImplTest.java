@@ -64,4 +64,22 @@ class PassagerServiceImplTest {
         assertEquals("Old", entity.getNom());
         verify(repository, never()).save(any());
     }
+
+    @Test
+    void unchangedEmailAllowsProfileUpdate() {
+        Passager entity = Passager.builder().id(1L).email("sara@example.com").build();
+        PassagerRequestDTO request = PassagerRequestDTO.builder().email(entity.getEmail())
+                .nom("Alami").prenom("Sara").telephone("0612345678").build();
+        PassagerResponseDTO response = PassagerResponseDTO.builder().id(1L).build();
+        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+        when(repository.save(entity)).thenReturn(entity);
+        when(mapper.toResponseDTO(entity)).thenReturn(response);
+        assertSame(response, service.updatePassager(1L, request));
+        assertAll(
+                () -> assertEquals("Alami", entity.getNom()),
+                () -> assertEquals("Sara", entity.getPrenom()),
+                () -> assertEquals("0612345678", entity.getTelephone()),
+                () -> assertEquals("sara@example.com", entity.getEmail()));
+        verify(repository, never()).existsByEmail(any());
+    }
 }
