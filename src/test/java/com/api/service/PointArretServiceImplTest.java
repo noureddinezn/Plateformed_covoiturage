@@ -130,4 +130,12 @@ class PointArretServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> service.getPointsArretByTrajetId(99L));
         verifyNoInteractions(pointArretRepository, mapper);
     }
+
+    @Test
+    void existingTripWithoutStopsReturnsEmptyList() {
+        when(trajetRepository.existsById(1L)).thenReturn(true);
+        when(pointArretRepository.findByTrajetIdOrderByOrdreAsc(1L)).thenReturn(List.of());
+        assertTrue(service.getPointsArretByTrajetId(1L).isEmpty());
+        verifyNoInteractions(mapper);
+    }
 }
