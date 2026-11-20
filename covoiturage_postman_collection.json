@@ -1,0 +1,903 @@
+{
+  "info": {
+    "name": "Covoiturage - Collection simple",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection manuelle, sans variables ni scripts. Les IDs fixes supposent une base de test vide, avec sequences commencees a 1. Demarrer Main et PostgreSQL. Ne pas lancer toute la collection automatiquement : certaines requetes de verification changent ou dependent de l etat.\n\nOrdre manuel : creer les conducteurs, le vehicule, les passagers puis le trajet principal 1. Ajouter ensuite ses trois points d arret (IDs 1, 2, 3). Faire les recherches, puis les reservations dans l ordre : Salma 1 place, Karim 2 places, rejet Imane, annulation Karim, rejet sens inverse.\n\nCas 9 : lancer terminer avant le depart. Cas 10 : apres la reservation d Imane (id 3), lancer le PUT de preparation puis son annulation. Le PUT contient la date fixe 2026-11-19T05:45:31, calculee a maintenant +12h lors de la generation. Si cette date est passee ou ne correspond plus au scenario, la remplacer manuellement par une date future a moins de 24h au format YYYY-MM-DDTHH:mm:ss. Sans variable ni script, ce delai ne peut pas rester automatique.\n\nLancer Cas 11 (dossier trajets) seulement APRES les tests de reservation : le trajet et les reservations confirmees deviennent annules. Verifier ensuite Salma dans le dossier reservations. Les dates 2099 sont des exemples futurs fixes. L appel page=0&size=5 est inclus mais l API actuelle ignore la pagination. Les GET /99 supposent des IDs absents. Aucun fichier Java modifie.",
+    "_postman_id": "2e382f22-ad68-40cb-a4f8-eca610a9fdbf"
+  },
+  "item": [
+    {
+      "name": "conducteurs",
+      "item": [
+        {
+          "name": "Creer Ahmed - id 1 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Alami\",\n  \"prenom\": \"Ahmed\",\n  \"email\": \"ahmed@gmail.com\",\n  \"telephone\": \"0611223344\",\n  \"numeroPermis\": \"PERMIS-1111\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer Youssef - id 2 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Bennani\",\n  \"prenom\": \"Youssef\",\n  \"email\": \"youssef@gmail.com\",\n  \"telephone\": \"0622334455\",\n  \"numeroPermis\": \"PERMIS-2222\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Doublon email - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Alami\",\n  \"prenom\": \"Ahmed\",\n  \"email\": \"ahmed@gmail.com\",\n  \"telephone\": \"0633445566\",\n  \"numeroPermis\": \"PERMIS-3333\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Doublon telephone - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Alami\",\n  \"prenom\": \"Ahmed\",\n  \"email\": \"autre@gmail.com\",\n  \"telephone\": \"0611223344\",\n  \"numeroPermis\": \"PERMIS-3333\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Doublon permis - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Alami\",\n  \"prenom\": \"Ahmed\",\n  \"email\": \"autre@gmail.com\",\n  \"telephone\": \"0633445566\",\n  \"numeroPermis\": \"PERMIS-1111\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Validation invalide - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"\",\n  \"prenom\": \"\",\n  \"email\": \"invalide\",\n  \"telephone\": \"\",\n  \"numeroPermis\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Voir les conducteurs - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs"
+          }
+        },
+        {
+          "name": "Conducteur introuvable - 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/conducteurs/99"
+          }
+        }
+      ]
+    },
+    {
+      "name": "vehicules",
+      "item": [
+        {
+          "name": "Creer vehicule du conducteur 1 - id 1 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/vehicules",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"marque\": \"Dacia\",\n  \"modele\": \"Logan\",\n  \"immatriculation\": \"12345-A-6\",\n  \"couleur\": \"Blanc\",\n  \"capacite\": 3,\n  \"conducteurId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Doublon immatriculation - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/vehicules",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"marque\": \"Dacia\",\n  \"modele\": \"Logan\",\n  \"immatriculation\": \"12345-A-6\",\n  \"couleur\": \"Blanc\",\n  \"capacite\": 3,\n  \"conducteurId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Conducteur introuvable - 404",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/vehicules",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"marque\": \"Dacia\",\n  \"modele\": \"Logan\",\n  \"immatriculation\": \"22222-A-6\",\n  \"couleur\": \"Blanc\",\n  \"capacite\": 3,\n  \"conducteurId\": 99\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Capacite invalide - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/vehicules",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"marque\": \"Dacia\",\n  \"modele\": \"Logan\",\n  \"immatriculation\": \"33333-A-6\",\n  \"couleur\": \"Blanc\",\n  \"capacite\": 0,\n  \"conducteurId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Voir le vehicule - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/vehicules/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "passagers",
+      "item": [
+        {
+          "name": "Creer Salma - id 1 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/passagers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"Salma\",\n  \"email\": \"salma@gmail.com\",\n  \"telephone\": \"0711223344\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer Karim - id 2 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/passagers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"Karim\",\n  \"email\": \"karim@gmail.com\",\n  \"telephone\": \"0722334455\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer Imane - id 3 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/passagers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"Imane\",\n  \"email\": \"imane@gmail.com\",\n  \"telephone\": \"0733445566\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Doublon email Salma - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/passagers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"Salma\",\n  \"email\": \"salma@gmail.com\",\n  \"telephone\": \"0744556677\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Passager introuvable - 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/passagers/99"
+          }
+        }
+      ]
+    },
+    {
+      "name": "trajets",
+      "item": [
+        {
+          "name": "Cas 8 - Vehicule d'un autre conducteur - 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conducteurId\": 2,\n  \"vehiculeId\": 1,\n  \"villeDepart\": \"Casablanca\",\n  \"villeArrivee\": \"Marrakech\",\n  \"dateDepart\": \"2099-06-01T10:00:00\",\n  \"placesProposees\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Cas 7 - Places superieures a la capacite - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conducteurId\": 1,\n  \"vehiculeId\": 1,\n  \"villeDepart\": \"Casablanca\",\n  \"villeArrivee\": \"Marrakech\",\n  \"dateDepart\": \"2099-06-01T10:00:00\",\n  \"placesProposees\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Date dans le passe - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conducteurId\": 1,\n  \"vehiculeId\": 1,\n  \"villeDepart\": \"Casablanca\",\n  \"villeArrivee\": \"Marrakech\",\n  \"dateDepart\": \"2000-01-01T10:00:00\",\n  \"placesProposees\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Creer trajet principal - id 1 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conducteurId\": 1,\n  \"vehiculeId\": 1,\n  \"villeDepart\": \"Casablanca\",\n  \"villeArrivee\": \"Marrakech\",\n  \"dateDepart\": \"2099-06-01T10:00:00\",\n  \"placesProposees\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Voir trajet principal et places restantes - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1"
+          }
+        },
+        {
+          "name": "Liste avec page et size - 200 - pagination non implementee",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets?page=0&size=5"
+          }
+        },
+        {
+          "name": "Cas 2 - Recherche Casablanca vers Settat - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/recherche?villeDepart=Casablanca&villeArrivee=Settat"
+          }
+        },
+        {
+          "name": "Cas 2 - Recherche inverse Settat vers Casablanca - 200 []",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/recherche?villeDepart=Settat&villeArrivee=Casablanca"
+          }
+        },
+        {
+          "name": "Cas 9 - Terminer avant le depart - 409",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1/terminer"
+          }
+        },
+        {
+          "name": "Cas 11 - Annuler trajet et reservations - 204",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1/annuler"
+          }
+        },
+        {
+          "name": "Verifier trajet ANNULE - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "points_arret",
+      "item": [
+        {
+          "name": "Ajouter Casablanca - arret id 1 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/points-arret",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trajetId\": 1,\n  \"ville\": \"Casablanca\",\n  \"ordre\": 1,\n  \"heurePassage\": \"2099-06-01T10:00:00\",\n  \"prixDepuisDepart\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ajouter Settat - arret id 2 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/points-arret",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trajetId\": 1,\n  \"ville\": \"Settat\",\n  \"ordre\": 2,\n  \"heurePassage\": \"2099-06-01T11:00:00\",\n  \"prixDepuisDepart\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ajouter Marrakech - arret id 3 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/points-arret",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trajetId\": 1,\n  \"ville\": \"Marrakech\",\n  \"ordre\": 3,\n  \"heurePassage\": \"2099-06-01T12:00:00\",\n  \"prixDepuisDepart\": 80\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Voir les arrets du trajet 1 - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/points-arret/trajet/1"
+          }
+        },
+        {
+          "name": "Arret introuvable - 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/points-arret/99"
+          }
+        }
+      ]
+    },
+    {
+      "name": "reservations",
+      "item": [
+        {
+          "name": "Cas 1 - Salma reserve Settat vers Marrakech - reservation id 1 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passagerId\": 1,\n  \"trajetId\": 1,\n  \"pointMonteeId\": 2,\n  \"pointDescenteId\": 3,\n  \"nombrePlaces\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Doublon reservation CONFIRMEE de Salma - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passagerId\": 1,\n  \"trajetId\": 1,\n  \"pointMonteeId\": 2,\n  \"pointDescenteId\": 3,\n  \"nombrePlaces\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Cas 3 - Karim reserve 2 places Casa vers Marrakech - reservation id 2 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passagerId\": 2,\n  \"trajetId\": 1,\n  \"pointMonteeId\": 1,\n  \"pointDescenteId\": 3,\n  \"nombrePlaces\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verifier Cas 3 - trajet COMPLET et 0 place - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1"
+          }
+        },
+        {
+          "name": "Cas 4 - Imane reserve sur trajet COMPLET - 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passagerId\": 3,\n  \"trajetId\": 1,\n  \"pointMonteeId\": 1,\n  \"pointDescenteId\": 3,\n  \"nombrePlaces\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Cas 5 - Karim annule plus de 24h avant - 204",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations/2/annuler"
+          }
+        },
+        {
+          "name": "Verifier Cas 5 - trajet PUBLIE et 2 places - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1"
+          }
+        },
+        {
+          "name": "Cas 6 - Imane reserve Marrakech vers Settat - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passagerId\": 3,\n  \"trajetId\": 1,\n  \"pointMonteeId\": 3,\n  \"pointDescenteId\": 2,\n  \"nombrePlaces\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Preparation Cas 10 - Imane reserve 1 place - reservation id 3 - 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"passagerId\": 3,\n  \"trajetId\": 1,\n  \"pointMonteeId\": 1,\n  \"pointDescenteId\": 3,\n  \"nombrePlaces\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Preparation Cas 10 - Modifier le depart a moins de 24h - 200",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/trajets/1",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conducteurId\": 1,\n  \"vehiculeId\": 1,\n  \"villeDepart\": \"Casablanca\",\n  \"villeArrivee\": \"Marrakech\",\n  \"dateDepart\": \"2026-11-19T05:45:31\",\n  \"placesProposees\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Cas 10 - Annulation a moins de 24h - 409",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations/3/annuler"
+          }
+        },
+        {
+          "name": "Voir les reservations - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations"
+          }
+        },
+        {
+          "name": "Verifier Cas 11 apres annulation du trajet - Salma ANNULEE - 200",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "http://localhost:8080/api/reservations/1"
+          }
+        }
+      ]
+    }
+  ]
+}
