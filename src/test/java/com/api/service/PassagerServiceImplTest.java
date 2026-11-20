@@ -94,4 +94,10 @@ class PassagerServiceImplTest {
         when(mapper.toResponseDTO(second)).thenReturn(secondResponse);
         assertEquals(List.of(firstResponse, secondResponse), service.getAllPassagers());
     }
+
+    @Test
+    void missingPassengerCannotBeDeleted() {
+        assertThrows(ResourceNotFoundException.class, () -> service.deletePassager(99L));
+        verify(repository, never()).deleteById(any());
+    }
 }
