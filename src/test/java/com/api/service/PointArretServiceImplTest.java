@@ -124,4 +124,10 @@ class PointArretServiceImplTest {
         when(mapper.toResponseDTO(pointArret)).thenReturn(responseDTO);
         assertSame(responseDTO, service.getPointArretById(1L));
     }
+
+    @Test
+    void listingMissingTripDoesNotQueryStops() {
+        assertThrows(ResourceNotFoundException.class, () -> service.getPointsArretByTrajetId(99L));
+        verifyNoInteractions(pointArretRepository, mapper);
+    }
 }
