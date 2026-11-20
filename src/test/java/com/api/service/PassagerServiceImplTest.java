@@ -52,4 +52,16 @@ class PassagerServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> service.getPassagerById(99L));
         verifyNoInteractions(mapper);
     }
+
+    @Test
+    void duplicateNewEmailLeavesPassengerUnchanged() {
+        Passager entity = Passager.builder().id(1L).email("old@example.com").nom("Old").build();
+        PassagerRequestDTO request = PassagerRequestDTO.builder().email("used@example.com").nom("New").build();
+        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+        when(repository.existsByEmail(request.getEmail())).thenReturn(true);
+        assertThrows(BusinessException.class, () -> service.updatePassager(1L, request));
+        assertEquals("old@example.com", entity.getEmail());
+        assertEquals("Old", entity.getNom());
+        verify(repository, never()).save(any());
+    }
 }
