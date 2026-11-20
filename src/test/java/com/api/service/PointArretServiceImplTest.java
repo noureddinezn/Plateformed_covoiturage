@@ -166,4 +166,14 @@ class PointArretServiceImplTest {
         verifyNoInteractions(trajetRepository, mapper);
         verify(pointArretRepository, never()).save(any());
     }
+
+    @Test
+    void updateWithMissingTripLeavesStopUnchanged() {
+        when(pointArretRepository.findById(1L)).thenReturn(Optional.of(pointArret));
+        requestDTO.setVille("Agadir");
+        assertThrows(ResourceNotFoundException.class, () -> service.updatePointArret(1L, requestDTO));
+        assertSame(trajet, pointArret.getTrajet());
+        assertEquals("Rabat", pointArret.getVille());
+        verify(pointArretRepository, never()).save(any());
+    }
 }
