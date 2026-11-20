@@ -182,4 +182,12 @@ class PointArretServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> service.deletePointArret(99L));
         verify(pointArretRepository, never()).deleteById(any());
     }
+
+    @Test
+    void deleteExistingStopUsesRequestedId() {
+        when(pointArretRepository.existsById(1L)).thenReturn(true);
+        service.deletePointArret(1L);
+        verify(pointArretRepository).deleteById(1L);
+        verifyNoInteractions(mapper, trajetRepository);
+    }
 }
