@@ -117,4 +117,11 @@ class PointArretServiceImplTest {
         assertThrows(ResourceNotFoundException.class, () -> service.getPointArretById(99L));
         verifyNoInteractions(mapper);
     }
+
+    @Test
+    void lookupStopReturnsMappedResponse() {
+        when(pointArretRepository.findById(1L)).thenReturn(Optional.of(pointArret));
+        when(mapper.toResponseDTO(pointArret)).thenReturn(responseDTO);
+        assertSame(responseDTO, service.getPointArretById(1L));
+    }
 }
