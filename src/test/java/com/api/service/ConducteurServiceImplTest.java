@@ -134,4 +134,12 @@ class ConducteurServiceImplTest {
         assertThrows(com.api.exception.ResourceNotFoundException.class, () -> service.getConducteurById(99L));
         verifyNoInteractions(mapper);
     }
+
+    @Test
+    void duplicatePermitPreventsCreation() {
+        when(repository.existsByNumeroPermis(requestDTO.getNumeroPermis())).thenReturn(true);
+        assertThrows(BusinessException.class, () -> service.saveConducteur(requestDTO));
+        verify(repository, never()).save(any());
+        verifyNoInteractions(mapper);
+    }
 }
