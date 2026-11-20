@@ -111,4 +111,10 @@ class PointArretServiceImplTest {
         assertEquals(1, result.get(0).getOrdre());
         verify(pointArretRepository, times(1)).findByTrajetIdOrderByOrdreAsc(1L);
     }
+
+    @Test
+    void lookupMissingStopDoesNotMap() {
+        assertThrows(ResourceNotFoundException.class, () -> service.getPointArretById(99L));
+        verifyNoInteractions(mapper);
+    }
 }
