@@ -1,7 +1,7 @@
 package com.api.controller;
 
-import com.api.dto.TrajetRequestDTO;
-import com.api.dto.TrajetResponseDTO;
+import com.api.dto.request.TrajetRequestDTO;
+import com.api.dto.response.TrajetResponseDTO;
 import com.api.service.TrajetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +42,23 @@ public class TrajetController {
     public ResponseEntity<Void> deleteTrajet(@PathVariable Long id) {
         service.deleteTrajet(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/terminer")
+    public ResponseEntity<TrajetResponseDTO> terminerTrajet(@PathVariable Long id) {
+        return ResponseEntity.ok(service.terminerTrajet(id));
+    }
+
+    @PatchMapping("/{id}/annuler")
+    public ResponseEntity<Void> annulerTrajet(@PathVariable Long id) {
+        service.annulerTrajet(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/recherche")
+    public ResponseEntity<List<TrajetResponseDTO>> rechercherTrajets(
+            @RequestParam("villeDepart") String villeDepart,
+            @RequestParam("villeArrivee") String villeArrivee) {
+        return ResponseEntity.ok(service.rechercherTrajets(villeDepart, villeArrivee));
     }
 }
