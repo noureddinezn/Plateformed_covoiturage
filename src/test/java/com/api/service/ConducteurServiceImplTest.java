@@ -128,4 +128,10 @@ class ConducteurServiceImplTest {
         verify(repository, never()).existsByTelephone(any());
     }
 
+
+    @Test
+    void missingConducteurLookupDoesNotMap() {
+        assertThrows(com.api.exception.ResourceNotFoundException.class, () -> service.getConducteurById(99L));
+        verifyNoInteractions(mapper);
+    }
 }
