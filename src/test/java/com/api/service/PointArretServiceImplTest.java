@@ -111,4 +111,83 @@ class PointArretServiceImplTest {
         assertEquals(1, result.get(0).getOrdre());
         verify(pointArretRepository, times(1)).findByTrajetIdOrderByOrdreAsc(1L);
     }
+
+    @Test
+    void lookupMissingStopDoesNotMap() {
+        assertThrows(ResourceNotFoundException.class, () -> service.getPointArretById(99L));
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void lookupStopReturnsMappedResponse() {
+        when(pointArretRepository.findById(1L)).thenReturn(Optional.of(pointArret));
+        when(mapper.toResponseDTO(pointArret)).thenReturn(responseDTO);
+        assertSame(responseDTO, service.getPointArretById(1L));
+    }
+
+    @Test
+    void listingMissingTripDoesNotQueryStops() {
+        assertThrows(ResourceNotFoundException.class, () -> service.getPointsArretByTrajetId(99L));
+        verifyNoInteractions(pointArretRepository, mapper);
+    }
+
+    @Test
+    void existingTripWithoutStopsReturnsEmptyList() {
+        when(trajetRepository.existsById(1L)).thenReturn(true);
+        when(pointArretRepository.findByTrajetIdOrderByOrdreAsc(1L)).thenReturn(List.of());
+        assertTrue(service.getPointsArretByTrajetId(1L).isEmpty());
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void updateStopCopiesFieldsAndChangesTrip() {
+        Trajet destination = Trajet.builder().id(2L).build();
+        requestDTO.setTrajetId(2L);
+        requestDTO.setVille("Kenitra");
+        requestDTO.setOrdre(3);
+        requestDTO.setPrixDepuisDepart(new BigDecimal("85.50"));
+        when(pointArretRepository.findById(1L)).thenReturn(Optional.of(pointArret));
+        when(trajetRepository.findById(2L)).thenReturn(Optional.of(destination));
+        when(pointArretRepository.save(pointArret)).thenReturn(pointArret);
+        when(mapper.toResponseDTO(pointArret)).thenReturn(responseDTO);
+        assertSame(responseDTO, service.updatePointArret(1L, requestDTO));
+        assertAll(
+                () -> assertSame(destination, pointArret.getTrajet()),
+                () -> assertEquals("Kenitra", pointArret.getVille()),
+                () -> assertEquals(3, pointArret.getOrdre()),
+                () -> assertEquals(requestDTO.getHeurePassage(), pointArret.getHeurePassage()),
+                () -> assertEquals(new BigDecimal("85.50"), pointArret.getPrixDepuisDepart()));
+        verify(pointArretRepository).save(pointArret);
+    }
+
+    @Test
+    void updateMissingStopDoesNotLoadTripOrSave() {
+        assertThrows(ResourceNotFoundException.class, () -> service.updatePointArret(99L, requestDTO));
+        verifyNoInteractions(trajetRepository, mapper);
+        verify(pointArretRepository, never()).save(any());
+    }
+
+    @Test
+    void updateWithMissingTripLeavesStopUnchanged() {
+        when(pointArretRepository.findById(1L)).thenReturn(Optional.of(pointArret));
+        requestDTO.setVille("Agadir");
+        assertThrows(ResourceNotFoundException.class, () -> service.updatePointArret(1L, requestDTO));
+        assertSame(trajet, pointArret.getTrajet());
+        assertEquals("Rabat", pointArret.getVille());
+        verify(pointArretRepository, never()).save(any());
+    }
+
+    @Test
+    void deleteMissingStopDoesNotDelete() {
+        assertThrows(ResourceNotFoundException.class, () -> service.deletePointArret(99L));
+        verify(pointArretRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void deleteExistingStopUsesRequestedId() {
+        when(pointArretRepository.existsById(1L)).thenReturn(true);
+        service.deletePointArret(1L);
+        verify(pointArretRepository).deleteById(1L);
+        verifyNoInteractions(mapper, trajetRepository);
+    }
 }

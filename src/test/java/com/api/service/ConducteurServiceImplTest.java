@@ -128,4 +128,32 @@ class ConducteurServiceImplTest {
         verify(repository, never()).existsByTelephone(any());
     }
 
+
+    @Test
+    void missingConducteurLookupDoesNotMap() {
+        assertThrows(com.api.exception.ResourceNotFoundException.class, () -> service.getConducteurById(99L));
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void duplicatePermitPreventsCreation() {
+        when(repository.existsByNumeroPermis(requestDTO.getNumeroPermis())).thenReturn(true);
+        assertThrows(BusinessException.class, () -> service.saveConducteur(requestDTO));
+        verify(repository, never()).save(any());
+        verifyNoInteractions(mapper);
+    }
+
+    @Test
+    void missingConducteurCannotBeDeleted() {
+        assertThrows(com.api.exception.ResourceNotFoundException.class, () -> service.deleteConducteur(99L));
+        verify(repository, never()).deleteById(any());
+    }
+
+    @Test
+    void existingConducteurIsDeletedById() {
+        when(repository.existsById(1L)).thenReturn(true);
+        service.deleteConducteur(1L);
+        verify(repository).deleteById(1L);
+        verifyNoInteractions(mapper);
+    }
 }
